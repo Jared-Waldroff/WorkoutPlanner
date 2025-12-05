@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
+} from '@react-navigation/native';
+import { adaptNavigationTheme, PaperProvider } from 'react-native-paper';
+import AppNavigator from './src/navigation/AppNavigator';
+import { ModernTheme, ModernDarkTheme } from './src/theme';
+import { ThemeProvider, useThemeContext } from './src/context/ThemeContext';
 
-export default function App() {
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+  reactNavigationLight: NavigationDefaultTheme,
+  reactNavigationDark: NavigationDarkTheme,
+  materialLight: ModernTheme,
+  materialDark: ModernDarkTheme,
+});
+
+function Main() {
+  const { isDark } = useThemeContext();
+  const paperTheme = isDark ? ModernDarkTheme : ModernTheme;
+  const navigationTheme = isDark ? DarkTheme : LightTheme;
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <PaperProvider theme={paperTheme}>
+      <AppNavigator navigationTheme={navigationTheme} />
+    </PaperProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  console.log('App mounting...');
+  return (
+    <ThemeProvider>
+      <Main />
+    </ThemeProvider>
+  );
+}
